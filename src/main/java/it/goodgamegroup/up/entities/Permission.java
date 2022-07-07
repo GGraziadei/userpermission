@@ -36,11 +36,11 @@ public class Permission {
     @Column(name = "DESCRIPTION")
     private String description;
 
-    @Column(name = "TYPE", nullable = false)
-    private Type type;
+    @ManyToOne
+    @JoinColumn(name = "PERMISSION_TYPE_ID" , nullable = false)
+    private PermissionType permissionType;
 
     @Column(name = "VALIDATED" , nullable = false)
     private boolean isValidated;
-
 
 }

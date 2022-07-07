@@ -7,5 +7,7 @@ import java.util.UUID;
 
 @Primary
 public interface UserDAO extends DaoPattern<User, UUID> {
+    User put(UserDTO userDTO);
+
     User update(UserDTO userDTO);
 }

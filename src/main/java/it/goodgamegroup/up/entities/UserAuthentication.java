@@ -2,7 +2,9 @@ package it.goodgamegroup.up.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -24,8 +26,7 @@ public class UserAuthentication {
     @JsonIgnore
     private UUID id;
 
-    @MapsId
-    @OneToOne(fetch = FetchType.EAGER, optional = false)
+    @OneToOne(fetch = FetchType.EAGER, optional = false , cascade = { CascadeType.ALL } )
     @JoinColumn(name = "USER_ID", nullable = false)
     @ToString.Exclude
     @JsonIgnore
@@ -47,14 +48,16 @@ public class UserAuthentication {
 
     @Column(name = "TS_CREATE", nullable = false)
     @JsonIgnore
+    @CreationTimestamp
     private Instant tsCreate;
 
     @Column(name = "TS_DELETE")
     @JsonIgnore
+    @UpdateTimestamp
     private Instant tsDelete;
 
     @Column(name = "TS_UPDATE", nullable = false)
     @JsonIgnore
+    @UpdateTimestamp
     private Instant tsUpdate;
-
 }

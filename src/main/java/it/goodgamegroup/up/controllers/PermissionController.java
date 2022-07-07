@@ -1,17 +1,18 @@
 package it.goodgamegroup.up.controllers;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import it.goodgamegroup.up.dto.PermissionDTO;
-import it.goodgamegroup.up.entities.Permission;
-import it.goodgamegroup.up.entities.PermissionId;
-import it.goodgamegroup.up.entities.Type;
-import it.goodgamegroup.up.entities.User;
+import it.goodgamegroup.up.entities.*;
 import it.goodgamegroup.up.services.dao.PermissionDAO;
+import it.goodgamegroup.up.services.dao.PermissionTypeDAO;
 import it.goodgamegroup.up.services.dao.UserDAO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -20,11 +21,17 @@ import java.util.UUID;
 @RequestMapping("/permissions")
 public class PermissionController {
 
+    public static final String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
+    public static final String TIME = "time";
+    public static final String PERMISSION_TYPE_ID = "permissionTypeId";
     @Autowired
     private PermissionDAO permissionService;
 
     @Autowired
     private UserDAO userService;
+
+    @Autowired
+    private PermissionTypeDAO permissionTypService;
 
 
     @GetMapping
@@ -46,17 +53,24 @@ public class PermissionController {
     }
 
     @PutMapping("/{userId}")
-    public Permission addPermission(@RequestBody LocalDateTime localDateTime ,
-                              @PathVariable(name = "userId") String userId){
+    public Permission addPermission(@RequestBody ObjectNode json,
+                                    @PathVariable(name = "userId") String userId){
         User user = this.userService.get(UUID.fromString(userId))
                 .orElseThrow();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(YYYY_MM_DD_HH_MM_SS);
+        LocalDateTime localDateTime = LocalDateTime.parse(json.get(TIME).asText(), formatter);
+
+        Long permissionTypeId = json.get(PERMISSION_TYPE_ID).asLong();
+        PermissionType permissionType = this.permissionTypService.get(permissionTypeId).orElseThrow();
+
         PermissionId permissionId = PermissionId.builder()
                 .userId(user.getId())
                 .permissionId(UUID.randomUUID())
                 .build();
         Permission permission = Permission.builder()
                 .isValidated(false)
-                .type(Type.NONE)
+                .permissionType(permissionType)
                 .id(permissionId)
                 .tsStart(localDateTime.toInstant(ZoneOffset.MIN))
                 .user(user)
@@ -65,14 +79,11 @@ public class PermissionController {
         return permission;
     }
 
-
     @DeleteMapping
     public Permission deletePermission(@RequestBody PermissionId permissionId){
         Permission permission = this.permissionService.get(permissionId).orElseThrow();
         this.permissionService.deleteById(permissionId);
         return permission;
     }
-
-    //I permessi non possono essere cancellati ma solamente modificati nelllo stoato per evitare che ci sia un problema di integrità referenziale
 
 }

@@ -9,9 +9,9 @@ import it.goodgamegroup.up.repositories.UserAuthenticationRepository;
 import it.goodgamegroup.up.repositories.UserRepository;
 import it.goodgamegroup.up.services.dao.UserDAO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -44,30 +44,17 @@ public class UserDefaultService implements UserDAO {
         return null;
     }
 
-
+    @Override
+    @Transactional
     public User put(UserDTO userDTO) {
-        BCryptPasswordEncoder passwordEncoder = new  BCryptPasswordEncoder();
-        //1. create usere in db
         User user = new User();
         userMapper.updateUserFromDTO(userDTO, user);
-        this.userRepository.save(user);
-
-        //2. Create UserAuth
-        UserAuthentication userAuthentication  = this.userAuthenticationRepository.save(UserAuthentication.builder()
-                        .userName(userDTO.getEmail())
-                        .password(passwordEncoder.encode(userDTO.getFiscalCode()))
-                        .tsCreate(Instant.now()).tsUpdate(Instant.now())
-                        .active(true).roles(Constant.USER).user(user)
-                .build());
-
-        //3. Link UserAuthentication to user
-        user.setUserAuthentication(userAuthentication);
         return this.userRepository.save(user);
     }
 
     @Override
     public void update(User user) {
-        //
+        this.userRepository.save(user);
     }
 
     @Override

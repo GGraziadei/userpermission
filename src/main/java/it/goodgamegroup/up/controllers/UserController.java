@@ -5,8 +5,11 @@ import it.goodgamegroup.up.entities.User;
 import it.goodgamegroup.up.entities.UserAuthentication;
 import it.goodgamegroup.up.services.UserDefaultService;
 import it.goodgamegroup.up.services.dao.UserDAO;
+import it.goodgamegroup.up.services.task.AddUser;
 import lombok.extern.slf4j.Slf4j;
+import org.jobrunr.scheduling.JobScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +23,12 @@ public class UserController {
     @Autowired
     private UserDefaultService userService;
 
+    @Autowired
+    private AddUser addUser;
+
+    @Autowired
+    private JobScheduler jobScheduler;
+
     @GetMapping
     public List<User> getAll(){
         return this.userService.getAll();
@@ -30,10 +39,10 @@ public class UserController {
         return this.userService.get(UUID.fromString(stringId));
     }
 
-    //Aggiunta di un nuovo utente
     @PutMapping
-    public User put(@RequestBody UserDTO userDTO){
-        return this.userService.put(userDTO);
+    public HttpStatus put(@RequestBody UserDTO userDTO){
+        jobScheduler.enqueue(() -> this.addUser.addUserTask(userDTO , userDTO.getFiscalCode()));
+        return HttpStatus.ACCEPTED;
     }
     
     @PutMapping("/{id}")

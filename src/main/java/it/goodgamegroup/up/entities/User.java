@@ -49,7 +49,7 @@ public class User {
     @JsonIgnore
     private Set<Permission> permissions = new LinkedHashSet<>();
 
-    @OneToOne(fetch = FetchType.LAZY,  mappedBy = "user")
+    @OneToOne(fetch = FetchType.LAZY,  mappedBy = "user" )
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private UserAuthentication userAuthentication;
 
