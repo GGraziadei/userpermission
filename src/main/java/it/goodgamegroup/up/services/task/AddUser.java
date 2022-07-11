@@ -1,10 +1,13 @@
 package it.goodgamegroup.up.services.task;
 
+import it.goodgamegroup.up.configurations.DefaultGroupName;
 import it.goodgamegroup.up.dto.UserDTO;
 import it.goodgamegroup.up.entities.User;
 import it.goodgamegroup.up.entities.UserAuthentication;
+import it.goodgamegroup.up.entities.UserAuthenticationGroup;
 import it.goodgamegroup.up.events.NewAuthCreated;
 import it.goodgamegroup.up.mappers.UserMapper;
+import it.goodgamegroup.up.services.dao.UserAuthenticationGroupDAO;
 import it.goodgamegroup.up.services.dao.UserDAO;
 import org.jobrunr.jobs.annotations.Job;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,9 @@ public class AddUser {
     private UserMapper userMapper;
 
     @Autowired
+    private UserAuthenticationGroup userGroup;
+
+    @Autowired
     ApplicationEventPublisher eventPublisher;
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -31,7 +37,7 @@ public class AddUser {
     public void addUserTask(UserDTO userDTO , String fiscalCode){
         User user = new User();
         userMapper.updateUserFromDTO(userDTO, user);
-        user.setUserAuthentication(new UserAuthentication(user));
+        user.setUserAuthentication(new UserAuthentication(user , this.userGroup ));
         this.userService.put(user);
         NewAuthCreated event = new NewAuthCreated(user.getUserAuthentication());
         this.eventPublisher.publishEvent(event);
