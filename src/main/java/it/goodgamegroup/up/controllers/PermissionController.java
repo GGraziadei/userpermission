@@ -75,8 +75,7 @@ public class PermissionController {
                 .tsStart(localDateTime.toInstant(ZoneOffset.MIN))
                 .user(user)
                 .build();
-        this.permissionService.put(permission);
-        return permission;
+        return this.permissionService.put(permission);
     }
 
     @DeleteMapping

@@ -20,14 +20,15 @@ import java.util.UUID;
 @DynamicUpdate
 @Table(name = "up_user_authentication")
 public class UserAuthentication {
-    @Id
-    @Column(name = "USER_ID", nullable = false)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
-    private UUID id;
 
-    @OneToOne(fetch = FetchType.EAGER, optional = false , cascade = { CascadeType.ALL } )
-    @JoinColumn(name = "USER_ID", nullable = false)
+    @Id
+    @Column(name = "AUTH_ID", nullable = false)
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonIgnore
+    private Long id;
+
+    @OneToOne(fetch = FetchType.EAGER, optional = false , cascade = CascadeType.ALL )
+    @JoinColumn(name = "USER_ID", nullable = false , referencedColumnName = "USER_ID")
     @ToString.Exclude
     @JsonIgnore
     private User user;

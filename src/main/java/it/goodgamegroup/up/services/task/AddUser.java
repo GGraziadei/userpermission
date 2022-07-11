@@ -4,47 +4,44 @@ import it.goodgamegroup.up.configurations.Constant;
 import it.goodgamegroup.up.dto.UserDTO;
 import it.goodgamegroup.up.entities.User;
 import it.goodgamegroup.up.entities.UserAuthentication;
+import it.goodgamegroup.up.mappers.UserMapper;
 import it.goodgamegroup.up.repositories.UserAuthenticationRepository;
-import it.goodgamegroup.up.services.dao.UserDAO;
+import it.goodgamegroup.up.repositories.UserRepository;
 import org.jobrunr.jobs.annotations.Job;
 import org.jobrunr.scheduling.JobScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.util.UUID;
-
 @Service
 public class AddUser {
 
     @Autowired
-    private UserDAO userService;
+    private UserRepository userRepository;
 
     @Autowired
     private JobScheduler jobScheduler;
 
     @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
     private UserAuthenticationRepository userAuthenticationRepository;
 
-    @Job(name = "addUser task - fiscal code %1" , retries = 1)
-    public void addUserTask(UserDTO userDTO , String fiscalCode){
-        User user = this.userService.put(userDTO);
-        //Add authentication for USER
-        jobScheduler.enqueue(() -> addUserAuthTask(user.getId()));
-    }
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    @Job(name = "addUserAuth task - userId %0" , retries = 1)
-    public void addUserAuthTask( UUID userId ){
-        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        User user = this.userService.get(userId).orElseThrow();
+    @Job(name = "ADD USER - fiscal_code %1 " , retries = 1)
+    public void addUserTask(UserDTO userDTO , String fiscalCode){
+        User user = new User();
         UserAuthentication userAuthentication = new UserAuthentication();
+        userMapper.updateUserFromDTO(userDTO, user);
         userAuthentication.setUserName(user.getEmail());
         userAuthentication.setPassword(passwordEncoder.encode(user.getFiscalCode()));
         userAuthentication.setActive(true);
         userAuthentication.setRoles(Constant.USER);
         userAuthentication.setUser(user);
-        this.userAuthenticationRepository.save(userAuthentication);
+        user.setUserAuthentication(userAuthentication);
+        this.userRepository.save(user);
     }
 
 }

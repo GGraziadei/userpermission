@@ -34,13 +34,16 @@ public class PermissionType {
 
     @Column(name = "TS_CREATE", nullable = false)
     @CreationTimestamp
+    @JsonIgnore
     private Instant tsCreate;
 
     @Column(name = "TS_DELETE")
+    @JsonIgnore
     private Instant tsDelete;
 
     @Column(name = "TS_UPDATE", nullable = false)
     @UpdateTimestamp
+    @JsonIgnore
     private Instant tsUpdate;
 
     @OneToMany(mappedBy = "permissionType" , fetch = FetchType.EAGER)

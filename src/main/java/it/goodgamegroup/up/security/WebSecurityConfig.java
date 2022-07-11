@@ -4,6 +4,7 @@ import it.goodgamegroup.up.configurations.Constant;
 import it.goodgamegroup.up.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -11,8 +12,12 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @Configuration
 @EnableWebSecurity
@@ -21,9 +26,36 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
+    @Value("${user.username}")
+    private String userUsername;
+    @Value("${admin.username}")
+    private String adminUsername;
+    @Value("${user.password}")
+    private String userPassword;
+    @Value("${admin.password}")
+    private String adminPassword;
+
+
+    @Bean
+    public UserDetailsService defaultUsers(){
+        UserDetails user = User.builder()
+                .username(userUsername)
+                .password(getPasswordEncoder().encode(userPassword))
+                .authorities("USER")
+                .build();
+        UserDetails admin = User.builder()
+                .username(adminUsername)
+                .password(getPasswordEncoder().encode(adminPassword))
+                .authorities("USER", "ADMIN")
+                .build();
+        return new InMemoryUserDetailsManager(user, admin);
+    }
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService);
+        auth.userDetailsService(userDetailsService)
+                .and()
+                .userDetailsService(defaultUsers());
     }
 
     @Override
