@@ -40,8 +40,9 @@ public class UserDefaultService implements UserDAO {
     }
 
     @Override
+    @Transactional
     public User put(User user) {
-        return null;
+        return this.userRepository.save(user);
     }
 
     @Override

@@ -48,6 +48,7 @@ dependencies {
 	implementation 'org.jobrunr:jobrunr-spring-boot-starter:5.1.4'
 	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail
 	implementation 'org.springframework.boot:spring-boot-starter-mail:2.7.1'
+	implementation('org.springframework.boot:spring-boot-starter-validation')
 
 }
 

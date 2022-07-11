@@ -8,6 +8,7 @@ import it.goodgamegroup.up.events.NewAuthCreated;
 import it.goodgamegroup.up.mappers.UserMapper;
 import it.goodgamegroup.up.repositories.UserAuthenticationRepository;
 import it.goodgamegroup.up.repositories.UserRepository;
+import it.goodgamegroup.up.services.dao.UserDAO;
 import org.jobrunr.jobs.annotations.Job;
 import org.jobrunr.scheduling.JobScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +20,10 @@ import org.springframework.stereotype.Service;
 public class AddUser {
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private JobScheduler jobScheduler;
+    private UserDAO userService;
 
     @Autowired
     private UserMapper userMapper;
-
-    @Autowired
-    private UserAuthenticationRepository userAuthenticationRepository;
 
     @Autowired
     ApplicationEventPublisher eventPublisher;
@@ -39,16 +34,10 @@ public class AddUser {
     @Job(name = "ADD USER - fiscal_code %1 " , retries = 1)
     public void addUserTask(UserDTO userDTO , String fiscalCode){
         User user = new User();
-        UserAuthentication userAuthentication = new UserAuthentication();
         userMapper.updateUserFromDTO(userDTO, user);
-        userAuthentication.setUserName(user.getEmail());
-        userAuthentication.setPassword(passwordEncoder.encode(user.getFiscalCode()));
-        userAuthentication.setActive(true);
-        userAuthentication.setRoles(Constant.USER);
-        userAuthentication.setUser(user);
-        user.setUserAuthentication(userAuthentication);
-        this.userRepository.save(user);
-        NewAuthCreated event = new NewAuthCreated(userAuthentication);
+        user.setUserAuthentication(new UserAuthentication(user));
+        this.userService.put(user);
+        NewAuthCreated event = new NewAuthCreated(user.getUserAuthentication());
         this.eventPublisher.publishEvent(event);
     }
 

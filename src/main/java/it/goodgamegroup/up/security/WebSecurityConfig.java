@@ -2,6 +2,7 @@ package it.goodgamegroup.up.security;
 
 import it.goodgamegroup.up.configurations.Constant;
 import it.goodgamegroup.up.services.UserDetailsServiceImpl;
+import it.goodgamegroup.up.utilities.Encoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,13 +41,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public UserDetailsService defaultUsers(){
         UserDetails user = User.builder()
                 .username(userUsername)
-                .password(getPasswordEncoder().encode(userPassword))
-                .authorities("USER")
+                .password(passwordEncoder().encode(userPassword))
+                .authorities(Constant.USER)
                 .build();
         UserDetails admin = User.builder()
                 .username(adminUsername)
-                .password(getPasswordEncoder().encode(adminPassword))
-                .authorities("USER", "ADMIN")
+                .password(passwordEncoder().encode(adminPassword))
+                .authorities(Constant.USER, Constant.ADMIN)
                 .build();
         return new InMemoryUserDetailsManager(user, admin);
     }
@@ -82,8 +83,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public PasswordEncoder getPasswordEncoder() {
-        return new BCryptPasswordEncoder();
+    public PasswordEncoder passwordEncoder(){
+        return new  BCryptPasswordEncoder();
     }
 
 }

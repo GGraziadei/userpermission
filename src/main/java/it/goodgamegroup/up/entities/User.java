@@ -2,11 +2,14 @@ package it.goodgamegroup.up.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import it.goodgamegroup.up.utilities.FiscalCodePattern;
+import it.goodgamegroup.up.utilities.PhoneNumberPattern;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.Reference;
 
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -30,18 +33,27 @@ public class User {
     private UUID id;
 
     @Column(name = "FIRST_NAME", nullable = false)
+    @NotNull
+    @Size(min = 3 , message = "firstName min 3 characters")
     private String firstName;
 
     @Column(name = "LAST_NAME", nullable = false)
+    @NotNull
+    @Size(min = 3 , message = "lastName min 3 characters")
     private String lastName;
 
     @Column(name = "FISCAL_CODE", nullable = false)
+    @Pattern(regexp = FiscalCodePattern.pattern, message = "insert a valid fiscal code")
     private String fiscalCode;
 
     @Column(name = "EMAIL", nullable = false)
+    @NotNull
+    @Size(min = 3 )
+    @Email(message = "insert a valid email")
     private String email;
 
     @Column(name = "PHONE_NUMBER", nullable = false)
+    @Pattern(regexp = PhoneNumberPattern.pattern,message = "insert a valid phone number")
     private String phoneNumber;
 
     @OneToMany(mappedBy = "user")
