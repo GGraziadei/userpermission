@@ -1,7 +1,6 @@
 package it.goodgamegroup.up.batch;
 
 import it.goodgamegroup.up.batch.readers.PermissionByUserReader;
-import it.goodgamegroup.up.batch.readers.PermissionDefaultReader;
 import it.goodgamegroup.up.batch.writers.PermissionCSVWriter;
 import it.goodgamegroup.up.entities.reports.UserJoinPermission;
 import org.springframework.batch.core.Job;

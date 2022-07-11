@@ -58,6 +58,16 @@ public class PermissionDefaultService implements PermissionDAO {
     }
 
     @Override
+    public List<Permission> getValidPermission() {
+        return this.permissionRepository.findByIsValidatedIs(true);
+    }
+
+    @Override
+    public List<Permission> getInvalidPermission() {
+        return this.permissionRepository.findByIsValidatedIs(false);
+    }
+
+    @Override
     public void delete(Permission permission) {
         this.permissionRepository.delete(permission);
     }

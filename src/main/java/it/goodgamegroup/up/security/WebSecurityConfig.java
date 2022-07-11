@@ -1,10 +1,8 @@
 package it.goodgamegroup.up.security;
 
-import it.goodgamegroup.up.configurations.Constant;
+import it.goodgamegroup.up.configurations.DefaultGroupName;
 import it.goodgamegroup.up.services.UserDetailsServiceImpl;
-import it.goodgamegroup.up.utilities.Encoder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,12 +40,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         UserDetails user = User.builder()
                 .username(userUsername)
                 .password(passwordEncoder().encode(userPassword))
-                .authorities(Constant.USER)
+                .authorities(DefaultGroupName.USER)
                 .build();
         UserDetails admin = User.builder()
                 .username(adminUsername)
                 .password(passwordEncoder().encode(adminPassword))
-                .authorities(Constant.USER, Constant.ADMIN)
+                .authorities(DefaultGroupName.USER, DefaultGroupName.ADMIN)
                 .build();
         return new InMemoryUserDetailsManager(user, admin);
     }
@@ -66,15 +64,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/encode").permitAll()
                 .antMatchers("/timestamp").permitAll()
                 //API mapping privileges
-                .antMatchers(HttpMethod.DELETE , "/users*").hasAuthority(Constant.ADMIN)
-                .antMatchers(HttpMethod.PUT , "/users*").hasAuthority(Constant.ADMIN)
-                .antMatchers(HttpMethod.GET , "/users*").hasAnyAuthority(Constant.ADMIN , Constant.USER)
-                .antMatchers(HttpMethod.DELETE , "/permissions*").hasAuthority(Constant.ADMIN)
-                .antMatchers( HttpMethod.GET ,"/permissions*").hasAnyAuthority(Constant.ADMIN , Constant.USER)
-                .antMatchers( HttpMethod.PUT ,"/permissions*").hasAnyAuthority(Constant.ADMIN , Constant.USER)
-                .antMatchers(HttpMethod.POST , "/reports*").hasAuthority(Constant.ADMIN)
-                .antMatchers("/add-user").hasAuthority(Constant.ADMIN)
-                .antMatchers("/permission-type").hasAuthority(Constant.ADMIN)
+                .antMatchers(HttpMethod.DELETE , "/users*").hasAuthority(DefaultGroupName.ADMIN)
+                .antMatchers(HttpMethod.PUT , "/users*").hasAuthority(DefaultGroupName.ADMIN)
+                .antMatchers(HttpMethod.GET , "/users*").hasAnyAuthority(DefaultGroupName.ADMIN , DefaultGroupName.USER)
+                .antMatchers(HttpMethod.DELETE , "/permissions*").hasAuthority(DefaultGroupName.ADMIN)
+                .antMatchers( HttpMethod.GET ,"/permissions*").hasAnyAuthority(DefaultGroupName.ADMIN , DefaultGroupName.USER)
+                .antMatchers( HttpMethod.PUT ,"/permissions*").hasAnyAuthority(DefaultGroupName.ADMIN , DefaultGroupName.USER)
+                .antMatchers(HttpMethod.POST , "/reports*").hasAuthority(DefaultGroupName.ADMIN)
+                .antMatchers("/add-user").hasAuthority(DefaultGroupName.ADMIN)
+                .antMatchers("/permission-type").hasAuthority(DefaultGroupName.ADMIN)
                 .antMatchers("/").authenticated().anyRequest().permitAll()
                 .and().formLogin()
                 .and().httpBasic();

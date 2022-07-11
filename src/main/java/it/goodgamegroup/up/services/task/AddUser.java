@@ -1,16 +1,12 @@
 package it.goodgamegroup.up.services.task;
 
-import it.goodgamegroup.up.configurations.Constant;
 import it.goodgamegroup.up.dto.UserDTO;
 import it.goodgamegroup.up.entities.User;
 import it.goodgamegroup.up.entities.UserAuthentication;
 import it.goodgamegroup.up.events.NewAuthCreated;
 import it.goodgamegroup.up.mappers.UserMapper;
-import it.goodgamegroup.up.repositories.UserAuthenticationRepository;
-import it.goodgamegroup.up.repositories.UserRepository;
 import it.goodgamegroup.up.services.dao.UserDAO;
 import org.jobrunr.jobs.annotations.Job;
-import org.jobrunr.scheduling.JobScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

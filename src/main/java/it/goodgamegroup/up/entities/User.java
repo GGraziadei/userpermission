@@ -59,11 +59,13 @@ public class User {
     @OneToMany(mappedBy = "user")
     @Builder.Default
     @JsonIgnore
+    @ToString.Exclude
     private Set<Permission> permissions = new LinkedHashSet<>();
 
     @OneToOne(fetch = FetchType.LAZY,  mappedBy = "user" , cascade = CascadeType.ALL , optional = true)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinColumn(name = "USER_ID" , referencedColumnName = "USER_ID")
+    @ToString.Exclude
     private UserAuthentication userAuthentication;
 
 }

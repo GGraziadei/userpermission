@@ -1,9 +1,7 @@
 package it.goodgamegroup.up.batch.readers;
 
-import it.goodgamegroup.up.entities.Permission;
 import it.goodgamegroup.up.entities.reports.UserJoinPermission;
 import it.goodgamegroup.up.repositories.UserJoinPermissionRepository;
-import it.goodgamegroup.up.services.dao.PermissionDAO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.annotation.AfterStep;
 import org.springframework.batch.core.annotation.BeforeStep;

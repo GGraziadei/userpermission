@@ -25,7 +25,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Optional<UserAuthentication> userAuthentication = this.userAuthenticationRepository.findByUserName(username);
         userAuthentication.orElseThrow(() -> new UsernameNotFoundException("Not found: " + username));
         UserDetailsImpl userDetails = userAuthentication.map(UserDetailsImpl::new).get(); //Custom UserDetails
-        log.info("Auth with user {} : " + userDetails.toString());
+        log.info("Auth with user: " + userDetails.toString());
         return userDetails;
     }
 

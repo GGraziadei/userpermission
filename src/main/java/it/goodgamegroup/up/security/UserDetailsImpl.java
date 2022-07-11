@@ -1,33 +1,32 @@
 package it.goodgamegroup.up.security;
 
-import it.goodgamegroup.up.configurations.Constant;
 import it.goodgamegroup.up.entities.UserAuthentication;
+import it.goodgamegroup.up.entities.UserAuthenticationGroup;
 import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @ToString
 public class UserDetailsImpl implements UserDetails {
 
     private final UserAuthentication userAuthentication;
-    private final List<GrantedAuthority> authorities;
+    private final List<UserAuthenticationGroup> userAuthenticationGroups;
 
     public UserDetailsImpl(UserAuthentication userAuthentication) {
         this.userAuthentication = userAuthentication;
-        this.authorities =  Arrays.stream(userAuthentication.getRoles().split(Constant.ROLE_SEPARATOR))
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+        this.userAuthenticationGroups = new ArrayList<>(userAuthentication.getUserAuthenticationGroups());
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+        return userAuthenticationGroups.stream()
+                .map(g -> g.getCode().toUpperCase(Locale.ROOT))
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
     }
 
     @Override

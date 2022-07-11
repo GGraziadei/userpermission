@@ -39,6 +39,16 @@ public class PermissionController {
         return this.permissionService.getAll();
     }
 
+    @GetMapping("valid-permissions")
+    public List<Permission> getValidPermission(){
+        return this.permissionService.getValidPermission();
+    }
+
+    @GetMapping("invalid-permissions")
+    public List<Permission> getInvalidPermission(){
+        return this.permissionService.getInvalidPermission();
+    }
+
     //Ritorna la lista dei permessi che sono stati effettuati da un utente
     @GetMapping("/{userId}")
     public List<Permission> getAllFromUser(@PathVariable(name = "userId") String userId){

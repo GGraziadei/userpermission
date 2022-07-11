@@ -1,24 +1,21 @@
 package it.goodgamegroup.up.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import it.goodgamegroup.up.configurations.Constant;
+import it.goodgamegroup.up.configurations.DefaultGroupName;
 import it.goodgamegroup.up.utilities.Encoder;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.persistence.*;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Getter
 @Setter
 @ToString
@@ -46,11 +43,12 @@ public class UserAuthentication {
     @JsonIgnore
     private String password;
 
-    @Column(name = "ROLES", nullable = false)
-    private String roles;
-
     @Column(name = "ACTIVE", nullable = false)
     private Boolean active;
+
+    @Column(name = "FAILED_LOGIN_ATTEMPTS", nullable = false)
+    @JsonIgnore
+    private int failedLoginAttempts;
 
     @Column(name = "TS_CREATE", nullable = false)
     @JsonIgnore
@@ -71,12 +69,24 @@ public class UserAuthentication {
             , mappedBy = "userAuthentication", cascade = CascadeType.ALL)
     private Set<VerificationToken> verificationTokenSet;
 
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinTable(name = "up_user_authentication_groups",
+            joinColumns =@JoinColumn(name = "AUTH_ID"),
+            inverseJoinColumns = @JoinColumn(name = "GROUP_ID" ))
+    @ToString.Exclude
+    private Set<UserAuthenticationGroup> userAuthenticationGroups = new HashSet<>();
+
     public UserAuthentication(User user) {
+        // TODO : aggiungere gruppo
+        //  UserAuthenticationGroup userAuthenticationGroup =
         this.user = user;
         this.userName = user.getEmail();
         this.password = Encoder.passwordEncoder.encode(user.getFiscalCode());
         this.setActive(false);
-        this.setRoles(Constant.USER);
+        this.userAuthenticationGroups.add(userAuthenticationGroup);
         this.verificationTokenSet = new HashSet<>();
         VerificationToken verificationToken = new VerificationToken(this);
         this.verificationTokenSet.add(verificationToken);

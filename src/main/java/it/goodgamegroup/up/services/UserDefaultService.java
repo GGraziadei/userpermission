@@ -1,8 +1,6 @@
 package it.goodgamegroup.up.services;
 
-import it.goodgamegroup.up.configurations.Constant;
 import it.goodgamegroup.up.dto.UserDTO;
-import it.goodgamegroup.up.entities.UserAuthentication;
 import it.goodgamegroup.up.mappers.UserMapper;
 import it.goodgamegroup.up.entities.User;
 import it.goodgamegroup.up.repositories.UserAuthenticationRepository;
@@ -12,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
