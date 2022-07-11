@@ -46,6 +46,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf:2.7.0'
 	// https://mvnrepository.com/artifact/org.jobrunr/jobrunr-spring-boot-starter
 	implementation 'org.jobrunr:jobrunr-spring-boot-starter:5.1.4'
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-mail
+	implementation 'org.springframework.boot:spring-boot-starter-mail:2.7.1'
+
 }
 
 tasks.named('test') {

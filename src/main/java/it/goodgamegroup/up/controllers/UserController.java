@@ -1,15 +1,20 @@
 package it.goodgamegroup.up.controllers;
 
+import it.goodgamegroup.up.configurations.Constant;
 import it.goodgamegroup.up.dto.UserDTO;
 import it.goodgamegroup.up.entities.User;
 import it.goodgamegroup.up.entities.UserAuthentication;
+import it.goodgamegroup.up.events.NewAuthCreated;
+import it.goodgamegroup.up.mappers.UserMapper;
 import it.goodgamegroup.up.services.UserDefaultService;
 import it.goodgamegroup.up.services.dao.UserDAO;
 import it.goodgamegroup.up.services.task.AddUser;
 import lombok.extern.slf4j.Slf4j;
 import org.jobrunr.scheduling.JobScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +25,7 @@ import java.util.UUID;
 @RequestMapping("/users")
 @Slf4j
 public class UserController {
+
     @Autowired
     private UserDefaultService userService;
 
@@ -28,6 +34,14 @@ public class UserController {
 
     @Autowired
     private JobScheduler jobScheduler;
+
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    ApplicationEventPublisher eventPublisher;
+
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @GetMapping
     public List<User> getAll(){
@@ -40,9 +54,20 @@ public class UserController {
     }
 
     @PutMapping
-    public HttpStatus put(@RequestBody UserDTO userDTO){
-        jobScheduler.enqueue(() -> this.addUser.addUserTask(userDTO , userDTO.getFiscalCode()));
-        return HttpStatus.ACCEPTED;
+    public User put(@RequestBody UserDTO userDTO){
+        User user = new User();
+        UserAuthentication userAuthentication = new UserAuthentication();
+        userMapper.updateUserFromDTO(userDTO, user);
+        userAuthentication.setUserName(user.getEmail());
+        userAuthentication.setPassword(passwordEncoder.encode(user.getFiscalCode()));
+        userAuthentication.setActive(false);
+        userAuthentication.setRoles(Constant.USER);
+        userAuthentication.setUser(user);
+        user.setUserAuthentication(userAuthentication);
+        this.userService.put(user);
+        NewAuthCreated event = new NewAuthCreated(userAuthentication);
+        this.eventPublisher.publishEvent(event);
+        return user;
     }
     
     @PutMapping("/{id}")
