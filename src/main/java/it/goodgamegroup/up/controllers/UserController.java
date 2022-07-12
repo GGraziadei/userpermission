@@ -4,6 +4,7 @@ import it.goodgamegroup.up.dto.UserDTO;
 import it.goodgamegroup.up.entities.User;
 import it.goodgamegroup.up.entities.UserAuthentication;
 import it.goodgamegroup.up.events.NewAuthCreated;
+import it.goodgamegroup.up.exceptions.EntitiesException;
 import it.goodgamegroup.up.mappers.UserMapper;
 import it.goodgamegroup.up.services.UserDefaultService;
 import it.goodgamegroup.up.services.task.AddUser;
@@ -50,9 +51,11 @@ public class UserController {
         return HttpStatus.ACCEPTED;
     }
     
-    @PutMapping("/{id}")
-    public User update(@RequestBody UserDTO user , @PathVariable String id){
-        assert  id.equals(user.getId().toString());
+    @PutMapping("/{userId}")
+    public User update(@RequestBody UserDTO user , @PathVariable String userId) throws EntitiesException {
+        if (!userId.equals(user.getId().toString())) {
+            throw  new EntitiesException("user from dto doesn't match with current path");
+        }
         return  this.userService.update(user);
     }
 

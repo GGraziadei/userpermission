@@ -60,4 +60,9 @@ public class UserAuthenticationGroupDefaultService implements UserAuthentication
     public UserAuthenticationGroup getByName(String name) {
         return this.userAuthenticationGroupRepository.findByName(name);
     }
+
+    @Override
+    public UserAuthenticationGroup getByCode(String code) {
+        return this.userAuthenticationGroupRepository.findByCode(code);
+    }
 }
