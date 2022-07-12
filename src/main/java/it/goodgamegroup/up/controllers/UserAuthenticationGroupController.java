@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -68,6 +69,17 @@ public class UserAuthenticationGroupController {
         }
         userAuthentication.getUserAuthenticationGroups().remove(userAuthenticationGroup);
         return this.userService.put(user);
+    }
+
+    @GetMapping("/users")
+    public List<User> getUserFromGroup(@RequestBody UserAuthenticationGroupDTO dto) throws EntitiesException {
+        if ( dto.getCode() == null){
+            throw new EntitiesException("insert group code ");
+        }
+        UserAuthenticationGroup userAuthenticationGroup = this.userAuthenticationGroupService.getByCode(dto.getCode());
+        return userAuthenticationGroup.getUserAuthentications().stream()
+                .map(UserAuthentication::getUser)
+                .collect(Collectors.toList());
     }
 
 }

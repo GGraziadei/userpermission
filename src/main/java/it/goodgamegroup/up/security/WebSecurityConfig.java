@@ -73,6 +73,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST , "/reports*").hasAuthority(DefaultGroup.ADMIN)
                 .antMatchers(HttpMethod.PUT , "/groups*").hasAuthority(DefaultGroup.ADMIN)
                 .antMatchers("/add-user").hasAuthority(DefaultGroup.ADMIN)
+                .antMatchers("/download/report*").hasAuthority(DefaultGroup.ADMIN)
                 .antMatchers("/permission-type").hasAuthority(DefaultGroup.ADMIN)
                 .antMatchers("/").authenticated().anyRequest().permitAll()
                 .and().formLogin()
