@@ -33,7 +33,7 @@ public class UserController {
     private JobScheduler jobScheduler;
 
     @Autowired
-    ApplicationEventPublisher eventPublisher;
+    private ApplicationEventPublisher eventPublisher;
 
     @GetMapping
     public List<User> getAll(){
