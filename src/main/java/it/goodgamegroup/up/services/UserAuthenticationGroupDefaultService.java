@@ -1,6 +1,8 @@
 package it.goodgamegroup.up.services;
 
+import it.goodgamegroup.up.dto.UserAuthenticationGroupDTO;
 import it.goodgamegroup.up.entities.UserAuthenticationGroup;
+import it.goodgamegroup.up.mappers.UserAuthenticationGroupMapper;
 import it.goodgamegroup.up.repositories.UserAuthenticationGroupRepository;
 import it.goodgamegroup.up.services.dao.UserAuthenticationGroupDAO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,9 @@ public class UserAuthenticationGroupDefaultService implements UserAuthentication
     @Autowired
     private UserAuthenticationGroupRepository userAuthenticationGroupRepository;
 
+    @Autowired
+    private UserAuthenticationGroupMapper userAuthenticationGroupMapper;
+
     @Override
     public Optional<UserAuthenticationGroup> get(Long id) {
         return this.userAuthenticationGroupRepository.findById(id);
@@ -26,6 +31,13 @@ public class UserAuthenticationGroupDefaultService implements UserAuthentication
 
     @Override
     public UserAuthenticationGroup put(UserAuthenticationGroup userAuthenticationGroup) {
+        return this.userAuthenticationGroupRepository.save(userAuthenticationGroup);
+    }
+
+    @Override
+    public UserAuthenticationGroup put(UserAuthenticationGroupDTO dto) {
+        UserAuthenticationGroup userAuthenticationGroup = new UserAuthenticationGroup();
+        userAuthenticationGroupMapper.updateUserGroupFromDTO(dto , userAuthenticationGroup);
         return this.userAuthenticationGroupRepository.save(userAuthenticationGroup);
     }
 

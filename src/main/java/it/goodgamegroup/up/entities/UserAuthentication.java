@@ -1,8 +1,6 @@
 package it.goodgamegroup.up.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import it.goodgamegroup.up.configurations.DefaultGroupName;
-import it.goodgamegroup.up.services.dao.UserAuthenticationGroupDAO;
 import it.goodgamegroup.up.utilities.Encoder;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -58,7 +56,6 @@ public class UserAuthentication {
 
     @Column(name = "TS_DELETE")
     @JsonIgnore
-    @UpdateTimestamp
     private Instant tsDelete;
 
     @Column(name = "TS_UPDATE", nullable = false)
@@ -70,19 +67,18 @@ public class UserAuthentication {
             , mappedBy = "userAuthentication", cascade = CascadeType.ALL)
     private Set<VerificationToken> verificationTokenSet = new HashSet<>();
 
-    @ManyToMany(cascade = CascadeType.PERSIST )
+    @ManyToMany(cascade = CascadeType.ALL )
     @JoinTable(name = "up_user_authentication_groups",
             joinColumns =@JoinColumn(name = "AUTH_ID"),
             inverseJoinColumns = @JoinColumn(name = "GROUP_ID" ) )
     @ToString.Exclude
     private Set<UserAuthenticationGroup> userAuthenticationGroups = new HashSet<>();
 
-    public UserAuthentication(User user , UserAuthenticationGroup userAuthenticationGroup ) {
+    public UserAuthentication(User user  ) {
         this.user = user;
         this.userName = user.getEmail();
         this.password = Encoder.passwordEncoder.encode(user.getFiscalCode());
         this.setActive(false);
-        this.userAuthenticationGroups.add(userAuthenticationGroup);
         VerificationToken verificationToken = new VerificationToken(this);
         this.verificationTokenSet.add(verificationToken);
     }

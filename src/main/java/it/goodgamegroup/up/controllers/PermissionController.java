@@ -39,12 +39,12 @@ public class PermissionController {
         return this.permissionService.getAll();
     }
 
-    @GetMapping("valid-permissions")
+    @GetMapping("/valid-permissions")
     public List<Permission> getValidPermission(){
         return this.permissionService.getValidPermission();
     }
 
-    @GetMapping("invalid-permissions")
+    @GetMapping("/invalid-permissions")
     public List<Permission> getInvalidPermission(){
         return this.permissionService.getInvalidPermission();
     }
