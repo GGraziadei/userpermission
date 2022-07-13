@@ -32,9 +32,6 @@ public class UserController {
     @Autowired
     private JobScheduler jobScheduler;
 
-    @Autowired
-    private ApplicationEventPublisher eventPublisher;
-
     @GetMapping
     public List<User> getAll(){
         return this.userService.getAll();
